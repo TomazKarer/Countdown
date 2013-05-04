@@ -8,16 +8,15 @@
 //     - Button images that change in context with the operation
 //
 //     Operation:
-//       - Select mode cycles from Editing Seconds ->
-//                                 Editing Minutes ->
-//                                 Run Mode        ->
-//                                 Editing Seconds -> ...
+//       - Mode Long Click changes from run mode
+//       - Mode Short Click does nothing in run mode, alternates between
+//         editing seconds and minutes.
 //       - Mode cannot be changed while the timer is running
 //       - Up/Down buttons increment/decrement the value being edited, they wrap around
 //         59->0/0->59, respectively
 //       - In run mode, when the timer is not running:
 //         - Up starts the timer
-//         - Select moves to Edit Seconds mode, and clears "Time's Up" if present
+//         - Select click does nothing, long click changes to edit mode
 //         - Down resets the timer to the last edited value, and clears "Time's Up" if present
 //       - In run mode, when the timer is running:
 //         - Up pauses the timer
@@ -80,7 +79,7 @@ const VibePattern timer_done_vibe = {
 // Timer modes are editing seconds, editing minutes and running timer.
 // Start in MODE_EDIT_SEC (editing seconds)
 typedef enum { MODE_EDIT_SEC, MODE_EDIT_MIN, MODE_RUN } Modes;
-Modes current_mode = MODE_EDIT_SEC;
+Modes current_mode = MODE_RUN;
 
 // Timer defaults to 1 minute at app startup
 typedef struct {
@@ -196,7 +195,6 @@ void up_single_click_handler (ClickRecognizerRef recognizer, Window *window) {
         seconds = (curr_val.min * 60) + curr_val.sec;
         if (seconds != 0) {
           display_button(UP_BUTTON, RESOURCE_ID_PAUSE_IMAGE);
-          remove_button(SELECT_BUTTON);
           remove_button(DOWN_BUTTON);
           seconds = (curr_val.min * 60) + curr_val.sec;
         }
@@ -204,7 +202,6 @@ void up_single_click_handler (ClickRecognizerRef recognizer, Window *window) {
       } else {                                                       // Pause the timer
         timer_running = false;
         display_button(UP_BUTTON, RESOURCE_ID_START_IMAGE);
-        display_button(SELECT_BUTTON, RESOURCE_ID_MODE_IMAGE);
         display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
       }
       break;
@@ -219,7 +216,6 @@ void select_single_click_handler (ClickRecognizerRef recognizer, Window *window)
   (void)recognizer;
   (void)window;
   
-  text_layer_set_background_color(&text_times_up_layer, GColorBlack);   // Clear "Time's Up"
   switch (current_mode) {
     case MODE_EDIT_SEC:
       // Change to editing minutes, unhighlight seconds, highlight minutes
@@ -230,32 +226,62 @@ void select_single_click_handler (ClickRecognizerRef recognizer, Window *window)
       text_layer_set_background_color(&text_min_layer, GColorWhite);      
       break;
     case MODE_EDIT_MIN:
-      // Change to run mode, unhighlight minutes, display start and reset button
-      // if the timer value is non-zero
-      current_mode = MODE_RUN;
+      // Change to editing seconds, highlight seconds, unhighlight minutes
+      current_mode = MODE_EDIT_SEC;
+      text_layer_set_text_color(&text_sec_layer, GColorBlack);
+      text_layer_set_background_color(&text_sec_layer, GColorWhite);
       text_layer_set_text_color(&text_min_layer, GColorWhite);
       text_layer_set_background_color(&text_min_layer, GColorBlack);
-      if ( ( curr_val.sec + curr_val.min ) != 0 ) {
-        display_button(UP_BUTTON, RESOURCE_ID_START_IMAGE);
-        display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
-      }
       break;
     case MODE_RUN:
-      // Do nothing if the timer is running
-      // Otherwise, highlight the seconds for editing and display the '+' and
-      // '-' buttons for editing seconds
-      if (!timer_running) {
-        current_mode = MODE_EDIT_SEC;
-        display_button(UP_BUTTON, RESOURCE_ID_PLUS_IMAGE);
-        display_button(DOWN_BUTTON, RESOURCE_ID_MINUS_IMAGE);
-        text_layer_set_text_color(&text_sec_layer, GColorBlack);
-        text_layer_set_background_color(&text_sec_layer, GColorWhite);      
-      }
+	  remove_button(SELECT_BUTTON);
       break;
     default:
       break;
   } // end switch
 
+}
+
+void select_long_click_handler (ClickRecognizerRef recognizer, Window *window) {
+
+  (void)recognizer;
+  (void)window;
+  
+  switch (current_mode) {
+  
+    case MODE_EDIT_SEC:
+      current_mode = MODE_RUN;
+      text_layer_set_text_color(&text_sec_layer, GColorWhite);
+      text_layer_set_background_color(&text_sec_layer, GColorBlack);
+      display_button(UP_BUTTON, RESOURCE_ID_START_IMAGE);
+      remove_button(SELECT_BUTTON);
+      display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
+      break;
+    case MODE_EDIT_MIN:
+      current_mode = MODE_RUN;
+      text_layer_set_text_color(&text_min_layer, GColorWhite);
+      text_layer_set_background_color(&text_min_layer, GColorBlack);
+      display_button(UP_BUTTON, RESOURCE_ID_START_IMAGE);
+      remove_button(SELECT_BUTTON);
+      display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
+      redisplay_timer();
+      break;
+    case MODE_RUN:
+      if (!timer_running) {
+        current_mode = MODE_EDIT_MIN;
+        text_layer_set_text_color(&text_min_layer, GColorBlack);
+        text_layer_set_background_color(&text_min_layer, GColorWhite);
+        display_button(UP_BUTTON, RESOURCE_ID_PLUS_IMAGE);
+        display_button(SELECT_BUTTON, RESOURCE_ID_MODE_IMAGE);
+        display_button(DOWN_BUTTON, RESOURCE_ID_MINUS_IMAGE);
+        redisplay_timer();
+      }
+      break;
+    default:
+      break;
+  
+  }
+  
 }
 
 // Handle a press of the down button
@@ -301,6 +327,7 @@ void click_config_provider(ClickConfig **config, Window *window) {
   (void)window;
 
   config[BUTTON_ID_SELECT]->click.handler = (ClickHandler) select_single_click_handler;
+  config[BUTTON_ID_SELECT]->long_click.handler = (ClickHandler) select_long_click_handler;
 
   config[BUTTON_ID_UP]->click.handler = (ClickHandler) up_single_click_handler;
   config[BUTTON_ID_UP]->click.repeat_interval_ms = 150;    // Repeats if button held down
@@ -338,8 +365,8 @@ void handle_init(AppContextRef ctx) {
 
   // Initialize space where seconds are shown
   text_layer_init(&text_sec_layer, window.layer.frame);
-  text_layer_set_text_color(&text_sec_layer, GColorBlack);
-  text_layer_set_background_color(&text_sec_layer, GColorWhite);
+  text_layer_set_text_color(&text_sec_layer, GColorWhite);
+  text_layer_set_background_color(&text_sec_layer, GColorBlack);
   layer_set_frame(&text_sec_layer.layer, GRect(67, 15, 50, 46));
   text_layer_set_font(&text_sec_layer, timer_font);
   layer_add_child(&window.layer, &text_sec_layer.layer);
@@ -366,9 +393,8 @@ void handle_init(AppContextRef ctx) {
   
   // Display initial button images. Since we start up editing seconds, we need
   // '+', '<-' and '-'
-  display_button(UP_BUTTON, RESOURCE_ID_PLUS_IMAGE);
-  display_button(SELECT_BUTTON, RESOURCE_ID_MODE_IMAGE);
-  display_button(DOWN_BUTTON, RESOURCE_ID_MINUS_IMAGE);
+  display_button(UP_BUTTON, RESOURCE_ID_START_IMAGE);
+  display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
   redisplay_timer();
 
   // Attach our desired button functionality

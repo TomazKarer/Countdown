@@ -1,0 +1,30 @@
+Countdown - A simple countdown timer for the Pebble watch. The header block:
+
+//
+// Countdown - a countdown timer. Features include:
+//
+//     - Editable time, in minutes and seconds, max 59:59
+//     - Pause and continue timer
+//     - Visual and vibration notification when time expires
+//     - Reset to run same time again
+//     - Button images that change in context with the operation
+//
+//     Operation:
+//       - Select mode cycles from Editing Seconds ->
+//                                 Editing Minutes ->
+//                                 Run Mode        ->
+//                                 Editing Seconds -> ...
+//       - Mode cannot be changed while the timer is running
+//       - Up/Down buttons increment/decrement the value being edited, they wrap around
+//         59->0/0->59, respectively
+//       - In run mode, when the timer is not running:
+//         - Up starts the timer
+//         - Select moves to Edit Seconds mode, and clears "Time's Up" if present
+//         - Down resets the timer to the last edited value, and clears "Time's Up" if present
+//       - In run mode, when the timer is running:
+//         - Up pauses the timer
+//         - Select does nothing
+//         - Down does nothing
+//
+
+
