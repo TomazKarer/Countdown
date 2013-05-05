@@ -1,28 +1,36 @@
+// Countdown - A simple countdown timer for the Pebble watch.
 //
-// Countdown - a countdown timer. Features include:
+// Written by: Don Krause
+// License: Free for anyone to use and modify. This software is offered as is, with no warranty or
+//          guarantee of operation or acceptable use. Use of the embedded Open Source Font is subject
+//          to the license: /resources/src/fonts/OFL.txt
 //
+//     Features include:
 //     - Editable time, in minutes and seconds, max 59:59
 //     - Pause and continue timer
 //     - Visual and vibration notification when time expires
 //     - Reset to run same time again
-//     - Button images that change in context with the operation
+//     - Button images that change in context with the mode and operation
 //
 //     Operation:
-//       - Mode Long Click changes from run mode
-//       - Mode Short Click does nothing in run mode, alternates between
-//         editing seconds and minutes.
-//       - Mode cannot be changed while the timer is running
-//       - Up/Down buttons increment/decrement the value being edited, they wrap around
-//         59->0/0->59, respectively
+//       - Countdown initializes in run mode with the timer set to 1 minute
+//       - Select Long Click alternates between run mode and edit mode, mode cannot be
+//         be changed while the timer is running
+//       - In edit mode:
+//         - Up button increments the value being edited, it wraps around
+//           59->0, press and hold to accelerate.
+//         - Select short click alternates between editing minutes and seconds
+//         - Down button decrements the value being edited, it wraps around
+//           0->59, press and hold to accelerate.
 //       - In run mode, when the timer is not running:
 //         - Up starts the timer
-//         - Select click does nothing, long click changes to edit mode
+//         - Select short click does nothing, long click changes to edit mode
 //         - Down resets the timer to the last edited value, and clears "Time's Up" if present
 //       - In run mode, when the timer is running:
 //         - Up pauses the timer
-//         - Select does nothing
+//         - Select short click does nothing, long click does nothing
 //         - Down does nothing
-//
+//       - Up and Down long clicks are not implemented
 
 #include "pebble_os.h"
 #include "pebble_app.h"
@@ -100,6 +108,10 @@ TextLayer text_times_up_layer;          // Layer for displaying "Time's Up" mess
 // Convert integers where 0 <= val <= 59 to two digit text
 // For now, change to '!!' if val is out-of-bounds. Will look strange on the Pebble.
 void itoa ( int val, char *txt ) {
+
+  if (sizeof(txt) < 2) {
+    return;
+  }
 
   if ( ( val >= 0 ) && ( val <= 59 ) ) {
     txt[0] = (char) ('0' + (val / 10));
@@ -407,6 +419,7 @@ void handle_deinit (AppContextRef ctx) {
 
   (void)ctx;
   
+  bmp_deinit_container(&background_image);
   for (int i = 0; i < NUM_BUTTONS; i++) {
     remove_button(i);
   }
