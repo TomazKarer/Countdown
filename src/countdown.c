@@ -281,8 +281,11 @@ void select_long_click_handler (ClickRecognizerRef recognizer, Window *window) {
     case MODE_RUN:
       if (!timer_running) {
         current_mode = MODE_EDIT_MIN;
+        text_layer_set_background_color(&text_times_up_layer, GColorBlack); // Clear "Time's Up"
         text_layer_set_text_color(&text_min_layer, GColorBlack);
         text_layer_set_background_color(&text_min_layer, GColorWhite);
+        curr_val.sec = init_val.sec;
+        curr_val.min = init_val.min;
         display_button(UP_BUTTON, RESOURCE_ID_PLUS_IMAGE);
         display_button(SELECT_BUTTON, RESOURCE_ID_MODE_IMAGE);
         display_button(DOWN_BUTTON, RESOURCE_ID_MINUS_IMAGE);
@@ -460,7 +463,6 @@ void handle_second_tick (AppContextRef ctx, PebbleTickEvent *t) {
       text_layer_set_background_color(&text_times_up_layer, GColorWhite);
       timer_running = false;
       remove_button(UP_BUTTON);
-      display_button(SELECT_BUTTON, RESOURCE_ID_MODE_IMAGE);
       display_button(DOWN_BUTTON, RESOURCE_ID_RESET_IMAGE);
       vibes_enqueue_custom_pattern(timer_done_vibe);
       
