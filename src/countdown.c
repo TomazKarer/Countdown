@@ -5,10 +5,7 @@
 //          guarantee of operation or acceptable use. Use of the embedded Open Source Font is subject
 //          to the license: /resources/src/fonts/OFL.txt
 //
-//  2.0: Updated to SDK 2.0. Greatly simplified, uses MenuBarLayer. Removed custom fonts. Smaller
-//       more efficient.
-//
-//  1.0: Features include:
+//     Features include:
 //     - Editable time, in minutes and seconds, max 59:59
 //     - Pause and continue timer
 //     - Visual and vibration notification when time expires
