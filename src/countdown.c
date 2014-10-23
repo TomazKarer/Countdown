@@ -392,6 +392,15 @@ static void handle_second_tick(struct tm *t, TimeUnits units_changed) {
       display_button(BUTTON_ID_DOWN, RESOURCE_ID_RESET_IMAGE);
       vibes_enqueue_custom_pattern(timer_done_vibe);
       
+      //After notification, there is no need to manually reset timer. To save on one click:
+      curr_val.sec = init_val.sec;
+      curr_val.min = init_val.min;
+      if ( ( curr_val.sec + curr_val.min ) != 0 ) {         // Only display start button if non-zero
+	display_button(BUTTON_ID_UP, RESOURCE_ID_START_IMAGE);
+	display_button(BUTTON_ID_SELECT, RESOURCE_ID_MODE_IMAGE);
+      }
+      redisplay_timer();
+      
     }
   }
   APP_LOG(APP_LOG_LEVEL_DEBUG, "exit:handle_second_tick()");

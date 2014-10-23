@@ -1,10 +1,10 @@
 {
   "uuid": "0dfeeb6b-179a-4b5c-9f00-aad6b81e8eb3",
-  "shortName": "Countdown",
-  "longName": "Countdown",
+  "shortName": "Countdown2",
+  "longName": "Countdown2",
   "companyName": "Don Krause",
   "versionCode": 2,
-  "versionLabel": "2.0.0",
+  "versionLabel": "2.1",
   "watchapp": {
     "watchface": false
   },
