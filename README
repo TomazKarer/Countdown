@@ -1,3 +1,5 @@
+Just a minor change, so that after timer expires, user doesn't have to click one more time, to reset timer.
+
 // Countdown - A simple countdown timer for the Pebble watch.
 //
 // Written by: Don Krause
