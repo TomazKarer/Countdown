@@ -400,6 +400,7 @@ static void handle_second_tick(struct tm *t, TimeUnits units_changed) {
 	display_button(BUTTON_ID_SELECT, RESOURCE_ID_MODE_IMAGE);
       }
       redisplay_timer();
+       text_layer_set_background_color(text_times_up_layer, GColorBlack); // Clear "Time's Up"
       
     }
   }

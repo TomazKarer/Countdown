@@ -1,57 +1,61 @@
 {
-  "uuid": "0dfeeb6b-179a-4b5c-9f00-aad6b81e8eb3",
-  "shortName": "Countdown2",
-  "longName": "Countdown2",
-  "companyName": "Don Krause",
-  "versionCode": 2,
-  "versionLabel": "2.1",
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {},
-  "resources": {
-    "media": [
-      {
-        "menuIcon": true,
-        "type": "png",
-        "name": "ICON_IMAGE",
-        "file": "images/icon.png"
-      },
-      {
-        "type": "png",
-        "name": "BACKGROUND_IMAGE",
-        "file": "images/background.png"
-      },
-      {
-        "type": "png",
-        "name": "PLUS_IMAGE",
-        "file": "images/plus.png"
-      },
-      {
-        "type": "png",
-        "name": "MINUS_IMAGE",
-        "file": "images/minus.png"
-      },
-      {
-        "type": "png",
-        "name": "RESET_IMAGE",
-        "file": "images/reset.png"
-      },
-      {
-        "type": "png",
-        "name": "PAUSE_IMAGE",
-        "file": "images/pause.png"
-      },
-      {
-        "type": "png",
-        "name": "MODE_IMAGE",
-        "file": "images/mode.png"
-      },
-      {
-        "type": "png",
-        "name": "START_IMAGE",
-        "file": "images/start.png"
-      }
-    ]
-  }
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "Don Krause",
+    "longName": "Countdown2",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/start.png",
+                "name": "START_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/mode.png",
+                "name": "MODE_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/pause.png",
+                "name": "PAUSE_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/reset.png",
+                "name": "RESET_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/minus.png",
+                "name": "MINUS_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/plus.png",
+                "name": "PLUS_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/background.png",
+                "name": "BACKGROUND_IMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/icon.png",
+                "menuIcon": true,
+                "name": "ICON_IMAGE",
+                "type": "png"
+            }
+        ]
+    },
+    "shortName": "Countdown2",
+    "uuid": "0dfeeb6b-179a-4b5c-9f00-aad6b81e8eb3",
+    "versionCode": 2,
+    "versionLabel": "2.1",
+    "watchapp": {
+        "watchface": false
+    }
 }
